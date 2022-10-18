@@ -11,7 +11,7 @@ misc: # Project sharing parameters
   num_steps: 1100000 # maximum iteration 2048000 steps
   evaluate_episode: 10
   evaluate_freq: 3
-  evaluate_freq_steps: 1000
+  evaluate_freq_steps: 2000
   ppo_evaluate_freq_steps: 4096
 ours :
   teacher_buffer_size: 10000

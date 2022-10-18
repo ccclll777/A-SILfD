@@ -69,9 +69,9 @@ def a_silfd_trainer(args,configs,train_envs,eval_envs):
     episode_replay_buffer = ReplayBuffer(configs.td3['buffer_size'])
     expert_scores = init_teacher_replay_buffer(teacher_replay_buffer,demonstrates_data)
     expert_scores.sort()
-    if configs.ours['bc_pre_train']:
-       redq_td3.actor.load_state_dict(torch.load(configs.ours['bc_model_path'],
-                      map_location=args.device))
+    # if configs.ours['bc_pre_train']:
+    #    redq_td3.actor.load_state_dict(torch.load(configs.ours['bc_model_path'],
+    #                   map_location=args.device))
 
     total_steps = 0
     #开始的评估

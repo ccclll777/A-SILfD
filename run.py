@@ -15,7 +15,6 @@ from trainer.td3_trainer import td3_trainer
 from trainer.redq_td3_trainer import redq_td3_trainer
 
 from trainer.asilfd import a_silfd_trainer
-from trainer.td3_trainer_per_train import td3_pre_train_trainer
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--benchmark', type=str, default='mujoco') #mujoco / dmc(deepmind control suit)
@@ -25,14 +24,13 @@ def main():
     parser.add_argument('--log_dir', type=str, default='logs')
     parser.add_argument('--model-path',type=str,default="models")
     parser.add_argument('--save', type=bool, default=True)#是否保存模型
-    parser.add_argument('--comet-config', type=str, default="") #configs/comel.yaml
     parser.add_argument('--train', type=bool, default=True)
     parser.add_argument(
         '--device', type=str,
         default='cuda' if torch.cuda.is_available() else 'cpu')
     parser.add_argument('--render', type=bool, default=False)
     parser.add_argument('--gpu-no', default=5, type=int)
-    parser.add_argument('--expert-type', default="mix", type=str,choices=['expert','mix','sub'])
+    parser.add_argument('--expert-type', default="expert", type=str,choices=['expert','mix','sub'])
 
     parser.add_argument('--bc-pre-train', default=False, type=bool)
 
@@ -50,6 +48,7 @@ def main():
     configs_file = open(configs_path, encoding="utf-8")
     configs = yaml.load(configs_file,Loader=yaml.FullLoader) #配置文件加载
     configs = argparse.Namespace(**configs)
+    args.envs = configs.env['env_name']
     """
         可能调整配置文件中的参数
     """
@@ -59,8 +58,12 @@ def main():
         configs.env['demonstrate_path'] = configs.env['mix_demonstrate_path']
     elif args.expert_type == 'sub':
         configs.env['demonstrate_path'] = configs.env['sub_demonstrate_path']
-
-    args.envs = configs.env['env_name']
+    if args.expert_type == 'mix' and args.bc_pre_train:
+        print("sub_bc_model_path")
+        configs.ours['bc_model_path'] = configs.ours['sub_bc_model_path']
+    elif args.expert_type == 'sub' and args.bc_pre_train:
+        print("sub_bc_model_path2")
+        configs.ours['bc_model_path'] = configs.ours['sub_bc_model_path']
 
     print(configs)
     train_envs = gym.make(configs.env['env_name'])
@@ -112,7 +115,5 @@ def main():
         redq_td3_trainer(args, configs, train_envs, eval_envs)
     elif args.algo == 'A-SILfD':
         a_silfd_trainer(args, configs, train_envs, eval_envs)
-    elif args.algo == 'td3_pre_train':
-        td3_pre_train_trainer(args, configs, train_envs, eval_envs)
 if __name__ == "__main__":
     main()
