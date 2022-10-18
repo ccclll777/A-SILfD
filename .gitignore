@@ -130,11 +130,6 @@ dmypy.json
 *.ipynb
 
 .vscode/
-
-# logs, a soft link to di
-
-# videos, a soft link to disk
-iql_logs_9-29/videos
 # Pyre type checker
 .pyre/
 .idea
