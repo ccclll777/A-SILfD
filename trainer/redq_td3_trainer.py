@@ -29,7 +29,7 @@ def redq_td3_trainer(args,configs,train_envs,eval_envs):
     if configs.ours['bc_pre_train']:
        redq_td3.actor.load_state_dict(torch.load(configs.ours['bc_model_path'],
                       map_location=args.device))
-    if configs.redq['pretrain_demo']: #用LfD的方式进行pre train
+    if configs.redq['pretrain_demo']:
         demonstrates_data = DemonstrateDataset(
             file_path=configs.env['demonstrate_path'],
             device=args.device)
@@ -39,7 +39,7 @@ def redq_td3_trainer(args,configs,train_envs,eval_envs):
             loss_dict = redq_td3.learn(batch_list, critic, critic_target, critic_optimizer)
 
     total_steps = 0
-    #开始的评估
+
     evaluate(eval_envs, redq_td3, trainning_args.evaluate_episode,
                                               trainning_args.episode_max_steps, total_steps, args.writer)
 
@@ -53,7 +53,7 @@ def redq_td3_trainer(args,configs,train_envs,eval_envs):
         episode_total_reward = 0
         steps = 0
         while not done and trainning_args.episode_max_steps >= steps:
-            #bcc初始化之后也要随机探索
+
             if total_steps < configs.td3['start_steps'] :
                 action = train_envs.action_space.sample()
             else:
@@ -78,25 +78,18 @@ def redq_td3_trainer(args,configs,train_envs,eval_envs):
             state = next_state
         if total_steps >= configs.misc['num_steps']:
             break
-        """
-        每个episode之后打印log
-        """
+
 
         if args.writer != None:
             args.writer.add_scalar("train/episode_reward", episode_total_reward, episode)
             args.writer.add_scalar("train/episode_length", steps, episode)
-        # if episode % trainning_args.evaluate_freq == 0:
-        #     print("train/episode:", episode, "reward：", episode_total_reward)
-        #     print("train/episode:", episode, "length：", steps)
-        """
-        评估结果
-        """
+
         # if episode % trainning_args.evaluate_freq == 0:
         if evaluate_step >= trainning_args.evaluate_freq_steps :
             print("train/episode:", episode, "reward：", episode_total_reward)
             print("train/episode:", episode, "length：", steps)
             evaluate_step = 0
-            # 评估结果
+
             average_reward, average_length = evaluate(eval_envs, redq_td3, trainning_args.evaluate_episode,
                                                       trainning_args.episode_max_steps, total_steps, args.writer)
 

@@ -25,7 +25,7 @@ class ReplayBuffer:
         state, _, _, _, _ = map(np.stack, zip(*self.buffer))
         return state
     def distill(self, ratio=0.05):
-        # random distill dataset, keep at least 50_000 data points. #据随机提取数据
+        # random distill dataset, keep at least 50_000 data points.
         data_size = max(int(ratio * len(self.buffer)), len(self.buffer)) # at least keep 50_000 data
         ind = np.random.randint(0,len(self.buffer), size=data_size)
         self.buffer[:data_size] = self.buffer[ind]

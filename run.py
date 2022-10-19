@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--seed', type=int, default=10)
     parser.add_argument('--log_dir', type=str, default='logs')
     parser.add_argument('--model-path',type=str,default="models")
-    parser.add_argument('--save', type=bool, default=True)#是否保存模型
+    parser.add_argument('--save', type=bool, default=True)
     parser.add_argument('--train', type=bool, default=True)
     parser.add_argument(
         '--device', type=str,
@@ -35,23 +35,17 @@ def main():
     parser.add_argument('--bc-pre-train', default=False, type=bool)
 
     parser.add_argument('--pretrain_demo', default=False, type=bool)
-    """
-    调参
-    """
+
     args = parser.parse_known_args()[0]
     print(args)
-    """
-    根据 benchmark 及任务  确定配置文件路径
-    """
+
     base_dir = os.getcwd()
     configs_path = os.path.join(base_dir,"configs", args.benchmark,args.task+".yaml")
     configs_file = open(configs_path, encoding="utf-8")
-    configs = yaml.load(configs_file,Loader=yaml.FullLoader) #配置文件加载
+    configs = yaml.load(configs_file,Loader=yaml.FullLoader)
     configs = argparse.Namespace(**configs)
     args.envs = configs.env['env_name']
-    """
-        可能调整配置文件中的参数
-    """
+
     if args.expert_type == 'expert':
         configs.env['demonstrate_path'] = configs.env['demonstrate_path']
     elif args.expert_type == 'mix':
@@ -90,9 +84,9 @@ def main():
         torch.cuda.set_device(args.gpu_no)
     args.writer = None
     args.comel_experiment = None
-    #训练模式下才会记录log
+
     if args.train:
-        # log相关
+
         t0 = datetime.datetime.now().strftime("%m%d_%H%M%S")
         args.log_file = f'seed_{args.seed}_{t0}'
         #log path
@@ -102,10 +96,10 @@ def main():
         args.model_path = os.path.join(base_dir, "results", args.model_path, args.benchmark + "_" + args.envs, args.algo, args.log_file)
         print("model_path",args.model_path)
         folder = os.path.exists(args.model_path)
-        if not folder:  # 判断是否存在文件夹如果不存在则创建为文件夹
+        if not folder:
             os.makedirs(args.model_path)
         writer = SummaryWriter(log_path)
-        # 写入 yaml 文件
+
         with open(os.path.join(log_path,args.task+".yaml"), "w") as yaml_file:
             yaml.dump(configs, yaml_file)
         args.writer = writer

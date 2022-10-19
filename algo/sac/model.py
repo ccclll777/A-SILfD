@@ -86,10 +86,8 @@ class GaussianPolicy(nn.Module):
 
     def sample(self, state):
         mean, log_std = self.forward(state)
-        std = log_std.exp() #可能都是nan 梯度消失
-        #判断 防止梯度消失
-        # if  torch.isnan(std.std()):
-        #     return None
+        std = log_std.exp()
+
         pi_distribution = Normal(mean, std)
         x_t = pi_distribution.rsample()  # for reparameterization trick (mean + std * N(0,1))
         y_t = torch.tanh(x_t)
@@ -102,10 +100,7 @@ class GaussianPolicy(nn.Module):
         return action, log_prob,mean
     def log_prob(self,state,action):
         mean, log_std = self.forward(state)
-        std = log_std.exp()  # 可能都是nan 梯度消失
-        # 判断 防止梯度消失
-        # if  torch.isnan(std.std()):
-        #     return None
+        std = log_std.exp()
         pi_distribution = Normal(mean, std)
         action = action / self.action_limit
         action = torch.atanh(action)  # arctanh to project [-1,1] to real

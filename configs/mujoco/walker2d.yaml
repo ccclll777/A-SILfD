@@ -4,7 +4,7 @@ env:
   mix_demonstrate_path: demonstrates/mix/walker2d-mix.pkl
   sub_demonstrate_path: demonstrates/sail_sub_optimal_expert/walker2d-1500.pkl
   base_reward: 2
-  r_max: 10.271 #hooper每个step的最大reward
+  r_max: 10.271
   max_reward_scale: 3
 misc: # Project sharing parameters
   episodes: 5000 # maximum iteration 2000 episode
@@ -16,21 +16,21 @@ misc: # Project sharing parameters
   ppo_evaluate_freq_steps: 4096
 ours :
   teacher_buffer_size: 10000
-  expert_ratio: 0.25 #训练时中专家轨迹的比例
+  expert_ratio: 0.25
   bc_pre_train: false
   bc_model_path: bc/walker2d.pth
   sub_bc_model_path: bc/walker2d_sub.pth
-  lamba: 1.0 #策略约束权重
-  lamba_min: 0.1 #策略约束权重 最小值
+  lamba: 1.0
+  lamba_min: 0.1
   lamba_decay: true
   lamba_decay_rate: 0.02
   lamba_decay_start: 0
   lamba_decay_freq: 1000
-  policy_loss_mode: bc_loss #策略loss的模型 basic/bc_loss/expert_constraint
+  policy_loss_mode: bc_loss
 redq :
   critic_num: 10
   pretrain_demo: false
-  pretrain_epoch: 20000 #50000可以不错d
+  pretrain_epoch: 20000
 td3:
   bc_model_path: bc/walker2d.pth
   hidden_width: 256
@@ -45,4 +45,4 @@ td3:
   buffer_size: 1000000
   priority_buffer: false
   batch_size: 256
-  start_steps: 10000 #开始采用随即动作初始化的步骤数
+  start_steps: 10000

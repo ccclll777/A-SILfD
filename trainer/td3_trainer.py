@@ -23,7 +23,7 @@ def td3_trainer(args,configs,train_envs,eval_envs):
     if configs.ours['bc_pre_train']:
        td3_agent.actor.load_state_dict(torch.load(configs.td3['bc_model_path'],
                       map_location=args.device))
-    if configs.redq['pretrain_demo']:  # 用RLfD的方式进行pre train
+    if configs.redq['pretrain_demo']:
            demonstrates_data = DemonstrateDataset(
                file_path=configs.env['demonstrate_path'],
                device=args.device)
@@ -31,7 +31,7 @@ def td3_trainer(args,configs,train_envs,eval_envs):
            for i in range(configs.redq['pretrain_epoch']):
                batch_list = td3_agent.replay_buffer.sample(configs.td3['batch_size'])
                td3_agent.learn(batch_list)
-       # 开始的评估
+
     evaluate(eval_envs, td3_agent, trainning_args.evaluate_episode,
                                                  trainning_args.episode_max_steps, total_steps, args.writer)
 
@@ -83,7 +83,7 @@ def td3_trainer(args,configs,train_envs,eval_envs):
             print("train/episode:", episode, "reward：", episode_total_reward)
             print("train/episode:", episode, "length：", steps)
             evaluate_step = 0
-            # 评估结果
+
             average_reward,average_length = evaluate(eval_envs, td3_agent, trainning_args.evaluate_episode, trainning_args.episode_max_steps,total_steps,
                                                      args.writer)
             if max_eval_avg_reward < average_reward and args.save and args.train:

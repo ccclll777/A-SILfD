@@ -4,15 +4,7 @@ import numpy as np
 import torch
 class DemonstrateDataset(Dataset):
     def  __init__(self,file_path,device = 'cpu'):
-        """
-        https://github.com/takuseno/d4rl-pybullet
-        https://blog.csdn.net/gsww404/article/details/123802410
-        :param task: 任务 hopper  ant half walker2d
-        :param level: random
-                         medium-replay
-        :param        medium-expert
-        :param        medium
-        """
+
         self.device = device
         init_dataset = pickle.load(open(file_path, 'rb'))
         dataset = dict()
@@ -21,7 +13,7 @@ class DemonstrateDataset(Dataset):
         dataset["actions"] = init_dataset["actions"]
         dataset["rewards"] = init_dataset["rewards"]
         dataset["dones"] = init_dataset["dones"]
-        #可用的专家数据
+
         self.expert_states =  dataset["states"]
         self.expert_next_states = dataset["next_states"]
         self.expert_actions = dataset["actions"]
@@ -44,7 +36,7 @@ class DemonstrateDataset(Dataset):
         self.source_action = (self.source_action - self.action_mean)/self.action_std
         self.source_state = (self.source_state - self.state_mean)/self.state_std
         self.target_delta = (self.target_delta - self.delta_mean)/self.delta_std
-        # Get indices of initial states #初始状态的索引
+        # Get indices of initial states
         self.done_indices = dataset["dones"][:-1]
         self.initial_indices = np.roll(self.done_indices, 1)
         self.initial_indices[0] = True
@@ -53,7 +45,7 @@ class DemonstrateDataset(Dataset):
         self.initial_obs_mean = self.initial_obs.mean(axis = 0)
         self.initial_obs_std = self.initial_obs.std(axis = 0)
 
-        # Remove transitions from terminal to initial states #剔除终止状态到起始状态的transition
+        # Remove transitions from terminal to initial states
         self.source_action = np.delete(self.source_action, self.done_indices, axis = 0)
         self.source_state = np.delete(self.source_state, self.done_indices, axis = 0)
         self.target_delta = np.delete(self.target_delta, self.done_indices, axis = 0)
@@ -94,13 +86,7 @@ class Sampling:
 
 class SamplingDataset(Dataset):
     def __init__(self, states, actions, dones, device='cpu'):
-        """
-        这个是从环境中采样的数据，用于训练dynmaic model
-        :param states:
-        :param actions:
-        :param dones:
-        :param device:
-        """
+
         self.device = device
         # states = torch.squeeze(torch.stack(states, dim=0)).detach().cpu()
         # actions = torch.squeeze(torch.stack(actions, dim=0)).detach().cpu()
@@ -126,7 +112,7 @@ class SamplingDataset(Dataset):
         self.source_state = (self.source_state - self.state_mean) / self.state_std
         self.target_delta = (self.target_delta - self.delta_mean) / self.delta_std
 
-        # Get indices of initial states #初始状态的索引
+        # Get indices of initial states
         self.done_indices = dataset["dones"][:-1]
         self.initial_indices = np.roll(self.done_indices, 1)
         self.initial_indices[0] = True
@@ -136,7 +122,7 @@ class SamplingDataset(Dataset):
         self.initial_obs_mean = self.initial_obs.mean(axis=0)
         self.initial_obs_std = self.initial_obs.std(axis=0)
 
-        # Remove transitions from terminal to initial states #剔除终止状态到起始状态的transition
+        # Remove transitions from terminal to initial states
         self.source_action = np.delete(self.source_action, self.done_indices, axis=0)
         self.source_state = np.delete(self.source_state, self.done_indices, axis=0)
         self.target_delta = np.delete(self.target_delta, self.done_indices, axis=0)
@@ -158,14 +144,7 @@ class SamplingDataset(Dataset):
     def __len__(self):
         return len(self.source_state)
 def weight_decay(step,weight_init =2 ,decay_rate = 0.000005 ):
-    """
-    权重衰减方法
-    :param step:  当前时间步
-    :param weight_init:  初始化权重  0.4时 1000个episode会衰减到很小
-    :param decay_rate:  衰减率
 
-    :return:
-    """
     return weight_init * ((1 - decay_rate) ** step)
 
 def evaluate(env, agent, eval_episode, episode_max_steps,total_steps = 0,writer = None,):

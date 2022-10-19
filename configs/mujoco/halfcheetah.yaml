@@ -4,7 +4,7 @@ env:
   mix_demonstrate_path: demonstrates/mix/halfcheetah-mix.pkl
   sub_demonstrate_path: demonstrates/sail_sub_optimal_expert/halfcheetah-5600.pkl
   base_reward: 1
-  r_max: 15.743 #hooper每个step的最大reward
+  r_max: 15.743 #
   max_reward_scale: 5
 misc: # Project sharing parameters
   episodes: 5000 # maximum iteration 2000 episode
@@ -16,17 +16,17 @@ misc: # Project sharing parameters
   ppo_evaluate_freq_steps: 4096
 ours :
   teacher_buffer_size: 10000
-  expert_ratio: 0.25 #训练时中专家轨迹的比例
+  expert_ratio: 0.25
   bc_pre_train: false
   bc_model_path: bc/halfcheetah.pth
   sub_bc_model_path: bc/halfcheetah_sub.pth
-  lamba: 1.0 #策略约束权重
-  lamba_min: 0.0 #策略约束权重 最小值
+  lamba: 1.0
+  lamba_min: 0.0
   lamba_decay: true
   lamba_decay_rate: 0.02
   lamba_decay_start: 0
   lamba_decay_freq: 1000
-  policy_loss_mode: bc_loss #策略loss的模型 basic/bc_loss/expert_constraint
+  policy_loss_mode: bc_loss #basic/bc_loss/expert_constraint
 redq :
   critic_num: 10
   pretrain_demo: false

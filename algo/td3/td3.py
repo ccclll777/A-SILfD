@@ -55,7 +55,7 @@ class TD3(nn.Module):
             self.replay_buffer = PrioritizedReplay(capacity = buffer_size)
         else:
             self.replay_buffer = ReplayBuffer(buffer_size)
-        self.updates = 0 #policy的更新次数
+        self.updates = 0
         self.training_step = 0
 
     def choose_action(self, state, evaluate=False):

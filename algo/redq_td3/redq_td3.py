@@ -126,7 +126,7 @@ class REDQTD3(nn.Module):
             action_batch = torch.Tensor(np.array(batch_list["action_list"])).to(self.device)
             pi = self.actor(state_batch)
             Q = critic(state_batch, pi).mean(0)
-            # actor loss的  alpha就是自适应调整 行为克隆的一个损失，将行为克隆的损失作为一个约束项
+            # actor loss
             if loss_mode == 'basic':
                 actor_loss = -Q.mean().mean()
             elif loss_mode == 'bc_loss':

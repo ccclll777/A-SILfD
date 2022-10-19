@@ -61,20 +61,16 @@ def a_silfd_trainer(args,configs,train_envs,eval_envs):
     demonstrates_data = DemonstrateDataset(
         file_path=configs.env['demonstrate_path'],
         device=args.device)
-    """
-    初始化不同的buffer
-    """
+
+
+
     replay_buffer = ReplayBuffer(configs.td3['buffer_size'])
     teacher_replay_buffer = ReplayBuffer(configs.td3['buffer_size'])
     episode_replay_buffer = ReplayBuffer(configs.td3['buffer_size'])
     expert_scores = init_teacher_replay_buffer(teacher_replay_buffer,demonstrates_data)
     expert_scores.sort()
-    # if configs.ours['bc_pre_train']:
-    #    redq_td3.actor.load_state_dict(torch.load(configs.ours['bc_model_path'],
-    #                   map_location=args.device))
 
     total_steps = 0
-    #开始的评估
     evaluate(eval_envs, redq_td3, trainning_args.evaluate_episode, trainning_args.episode_max_steps,total_steps,args.writer)
 
 
@@ -121,9 +117,8 @@ def a_silfd_trainer(args,configs,train_envs,eval_envs):
             total_steps += 1
             evaluate_step +=1
             state = next_state
-        """
-        每个episode之后
-        """
+
+
         if total_steps >= configs.misc['num_steps']:
             break
         if episode_total_reward > expert_scores[0] or episode_total_reward > EPISODE_MAX_REWARD / configs.env['max_reward_scale']:
@@ -132,23 +127,21 @@ def a_silfd_trainer(args,configs,train_envs,eval_envs):
                 args.writer.add_scalar("train/teacher_buffer_size", len(teacher_replay_buffer.buffer), total_steps)
                 args.writer.add_scalar("train/teacher_buffer_episode_total_reward", episode_total_reward, total_steps)
             episode_replay_buffer.reset()
-            # 最大的长度
             if len(expert_scores) >= configs.ours['teacher_buffer_size'] / trainning_args.episode_max_steps:
                 expert_scores.pop(0)
             expert_scores.append(episode_total_reward)
-            expert_scores.sort()  # 排序 找到score最大的那个
+            expert_scores.sort()
 
         if args.writer != None:
             args.writer.add_scalar("train/episode_reward", episode_total_reward, episode)
             args.writer.add_scalar("train/episode_length", steps, episode)
-        """
-        评估结果
-        """
+
+
         if evaluate_step >= trainning_args.evaluate_freq_steps :
         # if episode % trainning_args.evaluate_freq == 0:
             print("train/episode:", episode, "reward：", episode_total_reward)
             print("train/episode:", episode, "length：", steps)
-            # 评估结果
+
             average_reward, average_length = evaluate(eval_envs, redq_td3, trainning_args.evaluate_episode,
                                                       trainning_args.episode_max_steps, total_steps, args.writer  )
             evaluate_step = 0
